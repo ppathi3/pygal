@@ -48,6 +48,7 @@ class PublicApi(BaseGraph):
 
     def render(self, is_unicode=False, **kwargs):
         """Render the graph, and return the svg string"""
+        print("rendering graph")
         self.setup(**kwargs)
         svg = self.svg.render(
             is_unicode=is_unicode, pretty_print=self.pretty_print

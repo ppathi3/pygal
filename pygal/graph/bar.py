@@ -33,6 +33,7 @@ class Bar(Graph):
 
     def _bar(self, serie, parent, x, y, i, zero, secondary=False):
         """Internal bar drawing function"""
+        # print("Inside bar drawing")
         width = (self.view.x(1) - self.view.x(0)) / self._len
         x, y = self.view((x, y))
         series_margin = width * self._series_margin

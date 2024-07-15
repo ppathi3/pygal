@@ -91,9 +91,9 @@ def rad(degrees):
     return pi * degrees / 180
 
 
-def deg(radiants):
-    """Convert radiants in degrees"""
-    return 180 * radiants / pi
+# def deg(radiants):
+#     """Convert radiants in degrees"""
+#     return 180 * radiants / pi
 
 
 def _swap_curly(string):
@@ -303,11 +303,11 @@ def compose(f, g):
     return fun
 
 
-def safe_enumerate(iterable):
-    """Enumerate which does not yield None values"""
-    for i, v in enumerate(iterable):
-        if v is not None:
-            yield i, v
+# def safe_enumerate(iterable):
+#     """Enumerate which does not yield None values"""
+#     for i, v in enumerate(iterable):
+#         if v is not None:
+#             yield i, v
 
 
 def split_title(title, width, title_fs):

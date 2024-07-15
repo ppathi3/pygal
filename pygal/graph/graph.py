@@ -20,7 +20,7 @@
 
 from math import ceil, cos, sin, sqrt
 
-from pygal import stats
+# from pygal import stats
 from pygal._compat import is_list_like
 from pygal.graph.public import PublicApi
 from pygal.interpolate import INTERPOLATIONS

@@ -183,139 +183,139 @@ class ReverseView(View):
         return (self.height * (y - self.box.ymin) / self.box.height)
 
 
-class HorizontalView(View):
-    """Same as view but transposed"""
+# class HorizontalView(View):
+#     """Same as view but transposed"""
 
-    def __init__(self, width, height, box):
-        """Create the view with a width an height and a box bounds"""
-        self._force_vertical = None
-        self.width = width
-        self.height = height
+#     def __init__(self, width, height, box):
+#         """Create the view with a width an height and a box bounds"""
+#         self._force_vertical = None
+#         self.width = width
+#         self.height = height
 
-        self.box = box
-        self.box.fix()
-        self.box.swap()
+#         self.box = box
+#         self.box.fix()
+#         self.box.swap()
 
-    def x(self, x):
-        """Project x as y"""
-        if x is None:
-            return None
-        if self._force_vertical:
-            return super(HorizontalView, self).x(x)
-        return super(HorizontalView, self).y(x)
+#     def x(self, x):
+#         """Project x as y"""
+#         if x is None:
+#             return None
+#         if self._force_vertical:
+#             return super(HorizontalView, self).x(x)
+#         return super(HorizontalView, self).y(x)
 
-    def y(self, y):
-        """Project y as x"""
-        if y is None:
-            return None
-        if self._force_vertical:
-            return super(HorizontalView, self).y(y)
-        return super(HorizontalView, self).x(y)
-
-
-class PolarView(View):
-    """Polar projection for pie like graphs"""
-
-    def __call__(self, rhotheta):
-        """Project rho and theta"""
-        if None in rhotheta:
-            return None, None
-        rho, theta = rhotheta
-        return super(PolarView,
-                     self).__call__((rho * cos(theta), rho * sin(theta)))
+#     def y(self, y):
+#         """Project y as x"""
+#         if y is None:
+#             return None
+#         if self._force_vertical:
+#             return super(HorizontalView, self).y(y)
+#         return super(HorizontalView, self).x(y)
 
 
-class PolarLogView(View):
-    """Logarithmic polar projection"""
+# class PolarView(View):
+#     """Polar projection for pie like graphs"""
 
-    def __init__(self, width, height, box):
-        """Create the view with a width an height and a box bounds"""
-        super(PolarLogView, self).__init__(width, height, box)
-        if not hasattr(box, '_rmin') or not hasattr(box, '_rmax'):
-            raise Exception(
-                'Box must be set with set_polar_box for polar charts'
-            )
-
-        self.log10_rmax = log10(self.box._rmax)
-        self.log10_rmin = log10(self.box._rmin)
-        if self.log10_rmin == self.log10_rmax:
-            self.log10_rmax = self.log10_rmin + 1
-
-    def __call__(self, rhotheta):
-        """Project rho and theta"""
-        if None in rhotheta:
-            return None, None
-        rho, theta = rhotheta
-        # Center case
-        if rho == 0:
-            return super(PolarLogView, self).__call__((0, 0))
-        rho = (self.box._rmax - self.box._rmin) * (
-            log10(rho) - self.log10_rmin
-        ) / (self.log10_rmax - self.log10_rmin)
-        return super(PolarLogView,
-                     self).__call__((rho * cos(theta), rho * sin(theta)))
+#     def __call__(self, rhotheta):
+#         """Project rho and theta"""
+#         if None in rhotheta:
+#             return None, None
+#         rho, theta = rhotheta
+#         return super(PolarView,
+#                      self).__call__((rho * cos(theta), rho * sin(theta)))
 
 
-class PolarThetaView(View):
-    """Logarithmic polar projection"""
+# class PolarLogView(View):
+#     """Logarithmic polar projection"""
 
-    def __init__(self, width, height, box, aperture=pi / 3):
-        """Create the view with a width an height and a box bounds"""
-        super(PolarThetaView, self).__init__(width, height, box)
-        self.aperture = aperture
-        if not hasattr(box, '_tmin') or not hasattr(box, '_tmax'):
-            raise Exception(
-                'Box must be set with set_polar_box for polar charts'
-            )
+#     def __init__(self, width, height, box):
+#         """Create the view with a width an height and a box bounds"""
+#         super(PolarLogView, self).__init__(width, height, box)
+#         if not hasattr(box, '_rmin') or not hasattr(box, '_rmax'):
+#             raise Exception(
+#                 'Box must be set with set_polar_box for polar charts'
+#             )
 
-    def __call__(self, rhotheta):
-        """Project rho and theta"""
-        if None in rhotheta:
-            return None, None
-        rho, theta = rhotheta
-        start = 3 * pi / 2 + self.aperture / 2
-        theta = start + (2 * pi - self.aperture) * (theta - self.box._tmin) / (
-            self.box._tmax - self.box._tmin
-        )
-        return super(PolarThetaView,
-                     self).__call__((rho * cos(theta), rho * sin(theta)))
+#         self.log10_rmax = log10(self.box._rmax)
+#         self.log10_rmin = log10(self.box._rmin)
+#         if self.log10_rmin == self.log10_rmax:
+#             self.log10_rmax = self.log10_rmin + 1
+
+#     def __call__(self, rhotheta):
+#         """Project rho and theta"""
+#         if None in rhotheta:
+#             return None, None
+#         rho, theta = rhotheta
+#         # Center case
+#         if rho == 0:
+#             return super(PolarLogView, self).__call__((0, 0))
+#         rho = (self.box._rmax - self.box._rmin) * (
+#             log10(rho) - self.log10_rmin
+#         ) / (self.log10_rmax - self.log10_rmin)
+#         return super(PolarLogView,
+#                      self).__call__((rho * cos(theta), rho * sin(theta)))
 
 
-class PolarThetaLogView(View):
-    """Logarithmic polar projection"""
+# class PolarThetaView(View):
+#     """Logarithmic polar projection"""
 
-    def __init__(self, width, height, box, aperture=pi / 3):
-        """Create the view with a width an height and a box bounds"""
-        super(PolarThetaLogView, self).__init__(width, height, box)
-        self.aperture = aperture
-        if not hasattr(box, '_tmin') or not hasattr(box, '_tmax'):
-            raise Exception(
-                'Box must be set with set_polar_box for polar charts'
-            )
-        self.log10_tmax = log10(self.box._tmax) if self.box._tmax > 0 else 0
-        self.log10_tmin = log10(self.box._tmin) if self.box._tmin > 0 else 0
-        if self.log10_tmin == self.log10_tmax:
-            self.log10_tmax = self.log10_tmin + 1
+#     def __init__(self, width, height, box, aperture=pi / 3):
+#         """Create the view with a width an height and a box bounds"""
+#         super(PolarThetaView, self).__init__(width, height, box)
+#         self.aperture = aperture
+#         if not hasattr(box, '_tmin') or not hasattr(box, '_tmax'):
+#             raise Exception(
+#                 'Box must be set with set_polar_box for polar charts'
+#             )
 
-    def __call__(self, rhotheta):
-        """Project rho and theta"""
-        if None in rhotheta:
-            return None, None
-        rho, theta = rhotheta
-        # Center case
-        if theta == 0:
-            return super(PolarThetaLogView, self).__call__((0, 0))
-        theta = self.box._tmin + (self.box._tmax - self.box._tmin) * (
-            log10(theta) - self.log10_tmin
-        ) / (self.log10_tmax - self.log10_tmin)
+#     def __call__(self, rhotheta):
+#         """Project rho and theta"""
+#         if None in rhotheta:
+#             return None, None
+#         rho, theta = rhotheta
+#         start = 3 * pi / 2 + self.aperture / 2
+#         theta = start + (2 * pi - self.aperture) * (theta - self.box._tmin) / (
+#             self.box._tmax - self.box._tmin
+#         )
+#         return super(PolarThetaView,
+#                      self).__call__((rho * cos(theta), rho * sin(theta)))
 
-        start = 3 * pi / 2 + self.aperture / 2
-        theta = start + (2 * pi - self.aperture) * (theta - self.box._tmin) / (
-            self.box._tmax - self.box._tmin
-        )
 
-        return super(PolarThetaLogView,
-                     self).__call__((rho * cos(theta), rho * sin(theta)))
+# class PolarThetaLogView(View):
+#     """Logarithmic polar projection"""
+
+#     def __init__(self, width, height, box, aperture=pi / 3):
+#         """Create the view with a width an height and a box bounds"""
+#         super(PolarThetaLogView, self).__init__(width, height, box)
+#         self.aperture = aperture
+#         if not hasattr(box, '_tmin') or not hasattr(box, '_tmax'):
+#             raise Exception(
+#                 'Box must be set with set_polar_box for polar charts'
+#             )
+#         self.log10_tmax = log10(self.box._tmax) if self.box._tmax > 0 else 0
+#         self.log10_tmin = log10(self.box._tmin) if self.box._tmin > 0 else 0
+#         if self.log10_tmin == self.log10_tmax:
+#             self.log10_tmax = self.log10_tmin + 1
+
+#     def __call__(self, rhotheta):
+#         """Project rho and theta"""
+#         if None in rhotheta:
+#             return None, None
+#         rho, theta = rhotheta
+#         # Center case
+#         if theta == 0:
+#             return super(PolarThetaLogView, self).__call__((0, 0))
+#         theta = self.box._tmin + (self.box._tmax - self.box._tmin) * (
+#             log10(theta) - self.log10_tmin
+#         ) / (self.log10_tmax - self.log10_tmin)
+
+#         start = 3 * pi / 2 + self.aperture / 2
+#         theta = start + (2 * pi - self.aperture) * (theta - self.box._tmin) / (
+#             self.box._tmax - self.box._tmin
+#         )
+
+#         return super(PolarThetaLogView,
+#                      self).__call__((rho * cos(theta), rho * sin(theta)))
 
 
 class LogView(View):
@@ -381,35 +381,35 @@ class XYLogView(XLogView, LogView):
         self.box.fix(False)
 
 
-class HorizontalLogView(XLogView):
-    """Transposed Logarithmic projection"""
+# class HorizontalLogView(XLogView):
+#     """Transposed Logarithmic projection"""
 
-    # Do not want to call the parent here
-    def __init__(self, width, height, box):
-        """Create the view with a width an height and a box bounds"""
-        self._force_vertical = None
-        self.width = width
-        self.height = height
-        self.box = box
-        self.log10_xmax = log10(self.box.ymax) if self.box.ymax > 0 else 0
-        self.log10_xmin = log10(self.box.ymin) if self.box.ymin > 0 else 0
-        if self.log10_xmin == self.log10_xmax:
-            self.log10_xmax = self.log10_xmin + 1
-        self.box.fix(False)
-        self.box.swap()
+#     # Do not want to call the parent here
+#     def __init__(self, width, height, box):
+#         """Create the view with a width an height and a box bounds"""
+#         self._force_vertical = None
+#         self.width = width
+#         self.height = height
+#         self.box = box
+#         self.log10_xmax = log10(self.box.ymax) if self.box.ymax > 0 else 0
+#         self.log10_xmin = log10(self.box.ymin) if self.box.ymin > 0 else 0
+#         if self.log10_xmin == self.log10_xmax:
+#             self.log10_xmax = self.log10_xmin + 1
+#         self.box.fix(False)
+#         self.box.swap()
 
-    def x(self, x):
-        """Project x as y"""
-        if x is None:
-            return None
-        if self._force_vertical:
-            return super(HorizontalLogView, self).x(x)
-        return super(XLogView, self).y(x)
+#     def x(self, x):
+#         """Project x as y"""
+#         if x is None:
+#             return None
+#         if self._force_vertical:
+#             return super(HorizontalLogView, self).x(x)
+#         return super(XLogView, self).y(x)
 
-    def y(self, y):
-        """Project y as x"""
-        if y is None:
-            return None
-        if self._force_vertical:
-            return super(XLogView, self).y(y)
-        return super(HorizontalLogView, self).x(y)
+#     def y(self, y):
+#         """Project y as x"""
+#         if y is None:
+#             return None
+#         if self._force_vertical:
+#             return super(XLogView, self).y(y)
+#         return super(HorizontalLogView, self).x(y)
