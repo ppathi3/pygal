@@ -52,7 +52,9 @@ cd dist
 pip install pygal-3.0.4-py3-none-any.whl
 ```
 
+## Test if the installation works fine
 
+You can find sample.ipynb file in the project, restart the kernel and run this file to check if the bar bar chart is rendered without any issues and your changes are reflected.
 
 ## Installation in general
 
