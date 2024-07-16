@@ -18,8 +18,43 @@
 **pygal** is a dynamic SVG charting library written in python.
 All the documentation is on [www.pygal.org](http://www.pygal.org)
 
+## Instructions for building and installing the Pygal in local by compiling new changes each time
+
+1. Clone the repository
+2. Go to the project directory
+```bash
+cd path/to/pygal
+```
+3. Ensure you have setuptools and wheel installed:
+```bash
+pip install setuptools wheel
+```
+4. Create the distribution package
+```bash
+python setup.py sdist bdist_wheel
+```
+
+NOTE: If you run into any issues regarding missing packages, please install the missing libraries as specified.
+This command will generate the distribution files (.whl file) in the dist directory.
 
 ## Installation
+
+You can install the library using the `.whl` file:
+
+1. Navigate to the `dist` directory.
+```bash
+cd dist
+```
+
+2. Install the `.whl` file using `pip`:
+
+```sh
+pip install pygal-3.0.4-py3-none-any.whl
+```
+
+
+
+## Installation in general
 
 As simple as:
 

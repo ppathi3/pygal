@@ -26,6 +26,7 @@ from pygal.util import alter, decorate, ident, swap
 
 
 class Bar(Graph):
+    print("At the beginning of Bar class")
     """Bar graph class"""
 
     _series_margin = .06
@@ -33,7 +34,8 @@ class Bar(Graph):
 
     def _bar(self, serie, parent, x, y, i, zero, secondary=False):
         """Internal bar drawing function"""
-        # print("Inside bar drawing")
+        print("Inside bar drawing function")
+        print("Enter bar function with the following arguments: self, serie, parent, x, y, i, zero, secondary", self, serie, parent, x, y, i, zero, secondary)
         width = (self.view.x(1) - self.view.x(0)) / self._len
         x, y = self.view((x, y))
         series_margin = width * self._series_margin
@@ -104,7 +106,10 @@ class Bar(Graph):
 
     def bar(self, serie, rescale=False):
         """Draw a bar graph for a serie"""
+        # a new SVG node for the serie is created
+        print("Enter bar function with the following arguments: self, serie and rescale", self, serie, rescale)
         serie_node = self.svg.serie(serie)
+        # A new SVG node for the bars is created within the serie node
         bars = self.svg.node(serie_node['plot'], class_="bars")
         if rescale and self.secondary_series:
             points = self._rescale(serie.points)
@@ -120,7 +125,7 @@ class Bar(Graph):
             bar = decorate(
                 self.svg, self.svg.node(bars, class_='bar'), metadata
             )
-
+        # The _bar method is called to draw the actual bar.
             x_, y_, width, height = self._bar(
                 serie, bar, x, y, i, self.zero, secondary=rescale
             )
@@ -129,7 +134,7 @@ class Bar(Graph):
                 serie_node['overlay'], x_ + width / 2, y_, serie.values[i],
                 metadata
             )
-
+        # this method is called to add tooltips and print values for the current point.
             self._tooltip_and_print_values(
                 serie_node, serie, bar, i, val, metadata, x_, y_, width, height
             )

@@ -30,6 +30,7 @@ class PublicApi(BaseGraph):
 
     def add(self, title, values, **kwargs):
         """Add a serie to this graph, compat api"""
+        print("Adding bars to this graph")
         if not is_list_like(values) and not isinstance(values, dict):
             values = [values]
         kwargs['title'] = title
