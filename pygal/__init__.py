@@ -48,7 +48,7 @@ from pygal.graph.histogram import Histogram
 # from pygal.graph.pie import Pie
 # from pygal.graph.pyramid import Pyramid, VerticalPyramid
 # from pygal.graph.radar import Radar
-# from pygal.graph.solidgauge import SolidGauge
+from pygal.graph.solidgauge import SolidGauge
 # from pygal.graph.stackedbar import StackedBar
 # from pygal.graph.stackedline import StackedLine
 # from pygal.graph.time import DateLine, DateTimeLine, TimeDeltaLine, TimeLine
