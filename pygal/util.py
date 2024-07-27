@@ -374,3 +374,67 @@ def merge(dict1, dict2):
             dict1[key] = mergextend(val, dict1.get(key, ()))
         else:
             dict1[key] = val
+
+
+import csv
+
+def read_shape_data_from_csv(file_path):
+    """
+    Reads a CSV file containing shape data coordinates and returns a list of coordinates.
+    
+    Parameters:
+    - file_path (str): The path to the CSV file.
+    
+    Returns:
+    - List[Tuple[float, float]]: A list of (x, y) tuples representing the coordinates.
+    """
+    coordinates = []
+
+    with open(file_path, mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        
+        for row in csv_reader:
+            try:
+                x = float(row['x'])
+                y = float(row['y'])
+                coordinates.append((x, y))
+            except KeyError as e:
+                print(f"Missing expected column: {e}")
+            except ValueError as e:
+                print(f"Invalid value encountered: {e}")
+
+    return coordinates
+
+def create_svg_path(coordinates):
+    """
+    Creates an SVG path element from a list of coordinates.
+    
+    Parameters:
+    - coordinates (List[Tuple[float, float]]): A list of (x, y) tuples representing the coordinates.
+    
+    Returns:
+    - str: An SVG path element as a string.
+    """
+    if not coordinates:
+        return ""
+
+    path_data = f"M {coordinates[0][0]} {coordinates[0][1]}"  # Move to the first point
+
+    for (x, y) in coordinates[1:]:
+        path_data += f" L {x} {y}"  # Draw lines to subsequent points
+
+    path_data += " Z"  # Close the path
+
+    svg_path = f'<path d="{path_data}" fill="none" stroke="black" />'
+    return svg_path
+
+def save_svg(file_path, svg_content):
+    """
+    Saves SVG content to a file.
+    
+    Parameters:
+    - file_path (str): The path to the file where the SVG content will be saved.
+    - svg_content (str): The SVG content to save.
+    """
+    with open(file_path, mode='w') as file:
+        file.write(svg_content)

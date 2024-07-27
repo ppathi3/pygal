@@ -160,28 +160,62 @@ class Bar(Graph):
             self._tooltip_and_print_values(
                 serie_node, serie, bar, i, val, metadata, x_, y_, width, height
             )
+# Algorithm Explanation:
+# 1. Initialize Variables:
 
+# cumulative_spacing: A variable to keep track of the cumulative spacing as we compute the positions of each bar.
+# self._x_pos: A list to store the x-axis positions of the bars.
+
+# 2. Calculate Total Spacing:
+
+# If self.bar_spacing is specified (i.e., it’s not None), calculate the sum of the values in self.bar_spacing and store it in total_spacing.
+# If self.bar_spacing is not specified, set total_spacing to 0.
+
+# 3. Scale the Spacing Values:
+
+# If total_spacing is greater than or equal to 1.0, compute a scale_factor to ensure the total spacing fits within the width of the graph. This is done by dividing 1.0 by total_spacing.
+# Multiply each value in self.bar_spacing by the scale_factor to get scaled_spacing. This scales down the spacing values so they sum to less than or equal to 1.0.
+# If total_spacing is less than 1.0, set scaled_spacing to be the same as self.bar_spacing (no scaling needed).
+
+# 4. Compute Bar Positions:
+
+# Loop over each bar index i from 0 to self._len - 1 (where self._len is the number of bars):
+# If scaled_spacing is defined and the current index i is not 0, add the previous spacing value to cumulative_spacing. This accounts for the spacing between the current bar and the previous bar.
+# Calculate the x-position pos for the current bar. The position is determined by the bar index i, the cumulative spacing up to the previous bar, and the total number of bars. Specifically:
+# (i + 0.5) / self._len places the bar at the center of its segment within the total width.
+# cumulative_spacing / self._len adjusts the position to account for the cumulative spacing between bars.
+# Append pos to self._x_pos.
+
+# 5. Set Bar Positions:
+
+# Call self._points(self._x_pos) to set the positions of the bars based on the computed self._x_pos.
+
+# 6. Set x-axis Maximum Limit:
+
+# Recalculate total_spacing based on scaled_spacing to get the total adjusted spacing.
+# Set self._box.xmax to (self._len + total_spacing) / self._len to ensure the x-axis accommodates all bars with the specified spacing.
+    """
+    Compute y min and max, y scale, and set labels for the bar graph.
+
+    This function calculates the minimum and maximum values for the y-axis,
+    determines the scale for the y-axis, and sets the labels for the x-axis.
+    It also computes the positions for the bars based on the specified bar spacing.
+
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
     def _compute(self):
-        """
-        Compute y min and max, y scale, and set labels for the bar graph.
-
-        This function calculates the minimum and maximum values for the y-axis,
-        determines the scale for the y-axis, and sets the labels for the x-axis.
-        It also computes the positions for the bars based on the specified bar spacing.
-
-        Parameters:
-        None
-
-        Returns:
-        None
-        """
+        # Adjust ymin and ymax for the y-axis based on specified min and max values
         if self._min:
             self._box.ymin = min(self._min, self.zero)
         if self._max:
             self._box.ymax = max(self._max, self.zero)
 
-        cumulative_spacing = 0
-        self._x_pos = []
+        cumulative_spacing = 0  # Initialize cumulative spacing
+        self._x_pos = []  # Initialize list for bar positions
 
         # Calculate total spacing if bar_spacing is specified
         if self.bar_spacing:
@@ -203,6 +237,7 @@ class Bar(Graph):
             pos = (i + .5) / self._len + cumulative_spacing / self._len
             self._x_pos.append(pos)
 
+        # Set the positions of the bars
         self._points(self._x_pos)
 
         # Set the xmax value for the x-axis based on the total spacing
