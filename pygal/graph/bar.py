@@ -1,6 +1,7 @@
 from pygal.graph.graph import Graph
 from pygal.util import alter, decorate, ident, swap
 
+
 class Bar(Graph):
     """Bar graph class"""
 
@@ -16,7 +17,8 @@ class Bar(Graph):
         # Call the parent class constructor
         super(Bar, self).__init__(*args, **kwargs)
 
-    def _bar(self, serie, parent, x, y, i, zero, secondary=False):
+    def _bar(self, serie, parent, x, y, i, zero, secondary=False, custom_shape=None):
+        print("Custom shape", custom_shape)
         """Internal bar drawing function"""
         # Calculate the width of each bar
         width = (self.view.x(1) - self.view.x(0)) / self._len
@@ -55,8 +57,36 @@ class Bar(Graph):
         # Determine if the bar should have rounded corners
         r = serie.rounded_bars * 1 if serie.rounded_bars else 0
 
+        if custom_shape:
+            attrib = custom_shape.get('attrib', {})
+            if 'x' not in attrib:
+                attrib['x'] = x
+            if 'y' not in attrib:
+                attrib['y'] = y
+            if 'width' not in attrib:
+                attrib['width'] = width
+            if 'height' not in attrib:
+                attrib['height'] = height
+            
+            if custom_shape['tag'] == 'polygon':
+                # Calculate the actual points based on x, y, width, and height
+                points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
+                attrib['points'] = points
+                # Remove the attributes that are not applicable to polygon
+                # since they could potentially impact the size
+                attrib.pop('x', None)
+                attrib.pop('y', None)
+                attrib.pop('width', None)
+                attrib.pop('height', None)
+
+            self.svg.custom_shape_node(
+                parent,
+                custom_shape['tag'],
+                attrib=attrib
+            )
+
         # Check if a bar image should be used instead of a regular bar
-        if self.bar_images and len(self.bar_images) > i:
+        elif self.bar_images and len(self.bar_images) > i:
             image_url = self.bar_images[i]
             self.svg.node(
                 parent,
@@ -149,8 +179,16 @@ class Bar(Graph):
             bar = decorate(
                 self.svg, self.svg.node(bars, class_='bar'), metadata
             )
+            custom_shape = {            
+            'tag': 'polygon',
+            'attrib': {
+                'points': '0,0 50,0 25,50',
+                # 'points': '50,45 45,48 47,54 53,54 55,48',
+                'class': 'custom-shape'
+                }
+            }
             x_, y_, width, height = self._bar(
-                serie, bar, x, y, i, self.zero, secondary=rescale
+                serie, bar, x, y, i, self.zero, secondary=rescale, custom_shape=custom_shape
             )
 
             self._confidence_interval(
@@ -194,6 +232,7 @@ class Bar(Graph):
 
 # Recalculate total_spacing based on scaled_spacing to get the total adjusted spacing.
 # Set self._box.xmax to (self._len + total_spacing) / self._len to ensure the x-axis accommodates all bars with the specified spacing.
+
     """
     Compute y min and max, y scale, and set labels for the bar graph.
 
@@ -207,6 +246,7 @@ class Bar(Graph):
     Returns:
     None
     """
+
     def _compute(self):
         # Adjust ymin and ymax for the y-axis based on specified min and max values
         if self._min:
@@ -233,7 +273,7 @@ class Bar(Graph):
         # Compute positions for bars with the scaled spacing
         for i in range(self._len):
             if scaled_spacing and len(scaled_spacing) > i and i != 0:
-                cumulative_spacing += scaled_spacing[i-1] / sum(scaled_spacing) * (self._len - 1)
+                cumulative_spacing += scaled_spacing[i - 1] / sum(scaled_spacing) * (self._len - 1)
             pos = (i + .5) / self._len + cumulative_spacing / self._len
             self._x_pos.append(pos)
 
