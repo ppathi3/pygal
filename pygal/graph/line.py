@@ -28,9 +28,11 @@ from pygal.util import alter, cached_property, decorate
 class Line(Graph):
     """Line graph class"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, shape='circle', shape_attributes=None, **kwargs):
         """Set _self_close as False, it's True for Radar like Line"""
         self._self_close = False
+        self.shape = shape
+        self.shape_attributes = shape_attributes if shape_attributes else {}
         super(Line, self).__init__(*args, **kwargs)
 
     @cached_property
@@ -82,7 +84,7 @@ class Line(Graph):
         return ([(values[0][0], zero)] + values + [(values[end][0], zero)])
 
     def line(self, serie, rescale=False):
-        """Draw the line serie"""
+        """Draw the line series with different shapes."""
         serie_node = self.svg.serie(serie)
         if rescale and self.secondary_series:
             points = self._rescale(serie.points)
@@ -120,16 +122,42 @@ class Line(Graph):
                 )
 
                 val = self._format(serie, i)
-                alter(
-                    self.svg.transposable_node(
-                        dots,
-                        'circle',
-                        cx=x,
-                        cy=y,
-                        r=serie.dots_size,
-                        class_='dot reactive tooltip-trigger'
-                    ), metadata
-                )
+                
+                # Conditions for each shape parameter
+                if self.shape == 'circle':
+                    alter(
+                        self.svg.transposable_node(
+                            dots,
+                            'circle',
+                            cx=x,
+                            cy=y,
+                            r=self.shape_attributes.get('r', serie.dots_size),
+                            class_='dot reactive tooltip-trigger'
+                        ), metadata
+                    )
+                elif self.shape == 'rect':
+                    alter(
+                        self.svg.transposable_node(
+                            dots,
+                            'rect',
+                            x=x - self.shape_attributes.get('width', 10) / 2,
+                            y=y - self.shape_attributes.get('height', 10) / 2,
+                            width=self.shape_attributes.get('width', 10),
+                            height=self.shape_attributes.get('height', 10),
+                            class_='dot reactive tooltip-trigger'
+                        ), metadata
+                    )
+                elif self.shape == 'polygon':
+                    points = self.shape_attributes.get('points', '0,0 10,0 5,10')
+                    alter(
+                        self.svg.transposable_node(
+                            dots,
+                            'polygon',
+                            points=f'{x},{y} {points}',
+                            class_='dot reactive tooltip-trigger'
+                        ), metadata
+                    )
+
                 self._tooltip_data(
                     dots, val, x, y, xlabel=self._get_x_label(i)
                 )

@@ -21,6 +21,7 @@
 from __future__ import division
 
 import re
+import pandas as pd
 from decimal import Decimal
 from math import ceil, cos, floor, log10, pi, sin
 
@@ -375,18 +376,30 @@ def merge(dict1, dict2):
         else:
             dict1[key] = val
 
+def create_bar_chart_from_csv(file_path, title, columns, x_labels_range):
+    # Reading and type casting columns in our csv file.
+    data_frame = pd.read_csv(file_path, dtype={col: float if col != 'Date' else str for col in columns})
+    
+    # Creating a dictionary to hold data for each column
+    data = {col: [] for col in columns if col != 'Date'}
+    
+    # Iterating through the DataFrame and appending data to the respective lists
+    for index, row in data_frame.iterrows():
+        for col in columns:
+            if col != 'Date':
+                data[col].append(row[col])
+    return data
 
 import csv
-
 def read_shape_data_from_csv(file_path):
     """
-    Reads a CSV file containing shape data coordinates and returns a list of coordinates.
+    Reads a CSV file containing shape data coordinates and returns a string of coordinates.
     
     Parameters:
     - file_path (str): The path to the CSV file.
     
     Returns:
-    - List[Tuple[float, float]]: A list of (x, y) tuples representing the coordinates.
+    - str: A string representing the coordinates in the format 'x1,y1 x2,y2 ...'.
     """
     coordinates = []
 
@@ -397,44 +410,11 @@ def read_shape_data_from_csv(file_path):
             try:
                 x = float(row['x'])
                 y = float(row['y'])
-                coordinates.append((x, y))
+                coordinates.append(f"{x},{y}")
             except KeyError as e:
                 print(f"Missing expected column: {e}")
             except ValueError as e:
                 print(f"Invalid value encountered: {e}")
 
-    return coordinates
+    return ' '.join(coordinates)
 
-def create_svg_path(coordinates):
-    """
-    Creates an SVG path element from a list of coordinates.
-    
-    Parameters:
-    - coordinates (List[Tuple[float, float]]): A list of (x, y) tuples representing the coordinates.
-    
-    Returns:
-    - str: An SVG path element as a string.
-    """
-    if not coordinates:
-        return ""
-
-    path_data = f"M {coordinates[0][0]} {coordinates[0][1]}"  # Move to the first point
-
-    for (x, y) in coordinates[1:]:
-        path_data += f" L {x} {y}"  # Draw lines to subsequent points
-
-    path_data += " Z"  # Close the path
-
-    svg_path = f'<path d="{path_data}" fill="none" stroke="black" />'
-    return svg_path
-
-def save_svg(file_path, svg_content):
-    """
-    Saves SVG content to a file.
-    
-    Parameters:
-    - file_path (str): The path to the file where the SVG content will be saved.
-    - svg_content (str): The SVG content to save.
-    """
-    with open(file_path, mode='w') as file:
-        file.write(svg_content)

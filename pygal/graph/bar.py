@@ -1,3 +1,4 @@
+import math
 from pygal.graph.graph import Graph
 from pygal.util import alter, decorate, ident, swap
 
@@ -14,11 +15,11 @@ class Bar(Graph):
         # Initialize bar_spacing and bar_images from kwargs
         self.bar_spacing = kwargs.pop('bar_spacing', None)
         self.bar_images = kwargs.pop('bar_images', None)
+        self.custom_shape = kwargs.pop('custom_shape', None)
         # Call the parent class constructor
         super(Bar, self).__init__(*args, **kwargs)
 
     def _bar(self, serie, parent, x, y, i, zero, secondary=False, custom_shape=None):
-        print("Custom shape", custom_shape)
         """Internal bar drawing function"""
         # Calculate the width of each bar
         width = (self.view.x(1) - self.view.x(0)) / self._len
@@ -59,30 +60,38 @@ class Bar(Graph):
 
         if custom_shape:
             attrib = custom_shape.get('attrib', {})
-            if 'x' not in attrib:
-                attrib['x'] = x
-            if 'y' not in attrib:
-                attrib['y'] = y
-            if 'width' not in attrib:
-                attrib['width'] = width
-            if 'height' not in attrib:
-                attrib['height'] = height
-            
             if custom_shape['tag'] == 'polygon':
-                # Calculate the actual points based on x, y, width, and height
-                points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
+                if 'sides' not in custom_shape:
+                    custom_shape['sides'] = 3  # Default to triangle if sides not specified
+
+                if custom_shape['sides'] == 3:
+                    # Triangle
+                    points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
+                elif custom_shape['sides'] == 5:
+                    # Pentagon
+                    points = f"{x},{y + height} " \
+                            f"{x + width},{y + height} " \
+                            f"{x + width},{y + 0.5 * height} " \
+                            f"{x + 0.5 * width},{y} " \
+                            f"{x},{y + 0.5 * height}"
+                elif custom_shape['sides'] == 6:
+                    # Hexagon
+                    points = f"{x},{y + height} " \
+                            f"{x + width},{y + height} " \
+                            f"{x + width},{y + height / 2} " \
+                            f"{x + 0.75 * width},{y} " \
+                            f"{x + 0.25 * width},{y} " \
+                            f"{x},{y + height / 2}"
+                else:
+                    # Default to triangle if unsupported shape
+                    points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
                 attrib['points'] = points
-                # Remove the attributes that are not applicable to polygon
-                # since they could potentially impact the size
-                attrib.pop('x', None)
-                attrib.pop('y', None)
-                attrib.pop('width', None)
-                attrib.pop('height', None)
 
             self.svg.custom_shape_node(
                 parent,
                 custom_shape['tag'],
-                attrib=attrib
+                attrib=attrib,
+                class_='rect reactive tooltip-trigger'
             )
 
         # Check if a bar image should be used instead of a regular bar
@@ -179,16 +188,8 @@ class Bar(Graph):
             bar = decorate(
                 self.svg, self.svg.node(bars, class_='bar'), metadata
             )
-            custom_shape = {            
-            'tag': 'polygon',
-            'attrib': {
-                'points': '0,0 50,0 25,50',
-                # 'points': '50,45 45,48 47,54 53,54 55,48',
-                'class': 'custom-shape'
-                }
-            }
             x_, y_, width, height = self._bar(
-                serie, bar, x, y, i, self.zero, secondary=rescale, custom_shape=custom_shape
+                serie, bar, x, y, i, self.zero, secondary=rescale, custom_shape=self.custom_shape
             )
 
             self._confidence_interval(
@@ -274,15 +275,23 @@ class Bar(Graph):
         for i in range(self._len):
             if scaled_spacing and len(scaled_spacing) > i and i != 0:
                 cumulative_spacing += scaled_spacing[i - 1] / sum(scaled_spacing) * (self._len - 1)
-            pos = (i + .5) / self._len + cumulative_spacing / self._len
+            
+            # Calculate the position
+            pos = (i + .001) / self._len + cumulative_spacing / self._len
             self._x_pos.append(pos)
+            print("Position", pos, self._x_pos)
+
+        # Adjust positions so that the last position ends at 1 and the view is not cropped
+        if self._x_pos and self._x_pos[-1] > 1:
+            scale_factor = 1 / self._x_pos[-1]
+            self._x_pos = [p * scale_factor for p in self._x_pos]
+            print("Scaled Positions", self._x_pos)
 
         # Set the positions of the bars
         self._points(self._x_pos)
 
-        # Set the xmax value for the x-axis based on the total spacing
-        total_spacing = sum(scaled_spacing) if scaled_spacing else 0
-        self._box.xmax = (self._len + total_spacing) / self._len
+        # Set the xmax value for the x-axis based on the final positions
+        self._box.xmax = max(self._x_pos) if self._x_pos else 1
 
     def _plot(self):
         """Draw bars for series and secondary series"""

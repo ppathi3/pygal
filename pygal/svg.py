@@ -207,6 +207,17 @@ class Svg(object):
                 del attrib[key]
         return etree.SubElement(parent, tag, attrib)
 
+    # Method to render the image inside the svgs
+    def image(self, parent, href, x, y, width, height):
+        """Add an image to the SVG."""
+        self.node(
+            parent, 'image',
+            href=href,
+            x=x,
+            y=y,
+            width=width,
+            height=height
+        )
 
     def transposable_node(self, parent=None, tag='g', attrib=None, **extras):
         """Make a new svg node which can be transposed if horizontal"""
