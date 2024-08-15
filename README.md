@@ -38,7 +38,19 @@ pip install -r requirements.txt
     a. Custom spacing
     b. Texture
 2. The custom spacing feature lets the user provide an array of values where the user can provide the spacing that he/she wants to provide between the graph bars.
-3. The texture feature lets the user provide an array of image URLs for each bar to which he/she wants to add a texture to. 
+3. The texture feature lets the user provide an array of image URLs for each bar to which he/she wants to add a texture to.
+   Examples:
+   ![image](https://github.com/user-attachments/assets/2473bd7b-5db8-48f8-a999-1028a6545ff5)
+
+   ![image](https://github.com/user-attachments/assets/85d6fcb4-c0a1-4fd8-bb7a-07533643fef8)
+
+   ![image](https://github.com/user-attachments/assets/2cf56e85-b4c9-45b6-a580-5a68fcf987a8)
+
+   ![image](https://github.com/user-attachments/assets/f3ae4e99-97aa-4349-92c0-74d932f536cc)
+
+   ![image](https://github.com/user-attachments/assets/e04ad966-2eb6-4ad6-a585-18d2823b3ed8)
+
+   
 ## Recompiling the updated version and testing the new changes
 1. Every time we make a change to the repo, ensure to create a new distribution package using: python setup.py bdist_wheel
 2. Now you can install the library using the .whl file by navigating to the dist directory: cd dist
