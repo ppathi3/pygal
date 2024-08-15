@@ -39,15 +39,49 @@ pip install -r requirements.txt
     b. Texture
 2. The custom spacing feature lets the user provide an array of values where the user can provide the spacing that he/she wants to provide between the graph bars.
 3. The texture feature lets the user provide an array of image URLs for each bar to which he/she wants to add a texture to.
+   ## How to use the feature?
    Examples:
    ![image](https://github.com/user-attachments/assets/2473bd7b-5db8-48f8-a999-1028a6545ff5)
 
+    ### Specifying bar spacing values
+    ```bash
+    bar_spacing = [0.1, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15]  # Adjust spacing values for each bar as needed
+
+    bar_chart = pygal.Bar(bar_spacing=bar_spacing)
+    ```
    ![image](https://github.com/user-attachments/assets/85d6fcb4-c0a1-4fd8-bb7a-07533643fef8)
+
+    ### Specifying bar spacing values
+    ```bash
+    bar_spacing = [0.1, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15]  # Adjust spacing values for each bar as needed
+
+    bar_chart = pygal.Bar(bar_spacing=bar_spacing, bar_images=['https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg', 'https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg'])
+    ```
 
    ![image](https://github.com/user-attachments/assets/2cf56e85-b4c9-45b6-a580-5a68fcf987a8)
 
+    ```bash
+    bar_chart = pygal.Bar(bar_images=['https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg', 'https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg'], custom_shape=None)
+
+    ```
    ![image](https://github.com/user-attachments/assets/f3ae4e99-97aa-4349-92c0-74d932f536cc)
 
+    ```bash
+    # Specifying file path for reading shape data from CSV
+    file_path = 'shape_data.csv'
+    coordinates = read_shape_data_from_csv(file_path)
+    print(coordinates)
+
+    # Specifying custom shape object
+    custom_shape = {            
+    'tag': 'polygon',
+    'attrib': {
+        'points': coordinates,
+        'class': 'custom-shape'
+        }
+    }
+    bar_chart = pygal.Bar(custom_shape=custom_shape)
+    ```
    ![image](https://github.com/user-attachments/assets/e04ad966-2eb6-4ad6-a585-18d2823b3ed8)
 
    
