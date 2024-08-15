@@ -199,7 +199,8 @@ class CommonConfig(BaseConfig):
         "Set to true to show only major dots according to their majored label"
     )
 
-    dots_size = Key(2.5, float, "Look", "Radius of the dots")
+    # Updated the vaue from 2.5 to 15 for enlarged points on scatter plots
+    dots_size = Key(15, float, "Look", "Radius of the dots")
 
     fill = Key(False, bool, "Look", "Fill areas under lines")
 

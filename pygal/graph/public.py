@@ -30,7 +30,6 @@ class PublicApi(BaseGraph):
 
     def add(self, title, values, **kwargs):
         """Add a serie to this graph, compat api"""
-        print("Adding bars to this graph")
         if not is_list_like(values) and not isinstance(values, dict):
             values = [values]
         kwargs['title'] = title
@@ -49,7 +48,6 @@ class PublicApi(BaseGraph):
 
     def render(self, is_unicode=False, **kwargs):
         """Render the graph, and return the svg string"""
-        print("rendering graph")
         self.setup(**kwargs)
         svg = self.svg.render(
             is_unicode=is_unicode, pretty_print=self.pretty_print

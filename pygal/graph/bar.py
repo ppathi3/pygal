@@ -1,5 +1,7 @@
+import math
 from pygal.graph.graph import Graph
 from pygal.util import alter, decorate, ident, swap
+
 
 class Bar(Graph):
     """Bar graph class"""
@@ -13,28 +15,23 @@ class Bar(Graph):
         # Initialize bar_spacing and bar_images from kwargs
         self.bar_spacing = kwargs.pop('bar_spacing', None)
         self.bar_images = kwargs.pop('bar_images', None)
+        self.custom_shape = kwargs.pop('custom_shape', None)
         # Call the parent class constructor
         super(Bar, self).__init__(*args, **kwargs)
 
-    def _bar(self, serie, parent, x, y, i, zero, secondary=False):
+    def _bar(self, serie, parent, x, y, i, zero, secondary=False, custom_shape=None):
         """Internal bar drawing function"""
         # Calculate the width of each bar
-        width = (self.view.x(1) - self.view.x(0)) / self._len
-        print("Width", width)
+        width = (self.view.x(1) - self.view.x(0)) / (self._len*self._order/2)
 
         # Apply bar spacing dynamically
         x, y = self.view((x, y))
-        print("X and Y", x, y)
 
         # Adjust for the margin between series
         series_margin = width * self._series_margin
-        print("Series margin", series_margin)
         x += series_margin
-        print("x after series margin", x)
         width -= 2 * series_margin
-        print("width after series margin multiplication", width)
         width /= self._order
-        print("width after order division", width, self._order)
 
         # Determine the position of the bar based on its index in the series
         if self.horizontal:
@@ -42,12 +39,10 @@ class Bar(Graph):
         else:
             serie_index = serie.index
         x += serie_index * width
-        print("X after adding series index width", x, serie_index)
 
         # Adjust for the margin within a single series
         serie_margin = width * self._serie_margin
         x += serie_margin
-        print("X after adding serie margin", x, serie_margin)
         width -= 2 * serie_margin
 
         # Calculate the height of the bar
@@ -55,8 +50,49 @@ class Bar(Graph):
         # Determine if the bar should have rounded corners
         r = serie.rounded_bars * 1 if serie.rounded_bars else 0
 
+        # If custom shape is provided, render it
+        if custom_shape:
+            attrib = custom_shape.get('attrib', {})
+            if custom_shape['tag'] == 'polygon':
+                points = attrib.get('points', '')
+            if points:
+                # Parse the points into a list of tuples (x, y)
+                points_list = [tuple(map(float, p.split(','))) for p in points.split()]
+
+                # Normalize points to fit within a unit square (0,0) to (1,1)
+                min_x = min(px for px, _ in points_list)
+                max_x = max(px for px, _ in points_list)
+                min_y = min(py for _, py in points_list)
+                max_y = max(py for _, py in points_list)
+                range_x = max_x - min_x
+                range_y = max_y - min_y
+
+                # Avoid division by zero
+                if range_x == 0:
+                    range_x = 1
+                if range_y == 0:
+                    range_y = 1
+
+                normalized_points = [
+                    ((px - min_x) / range_x, (py - min_y) / range_y) for px, py in points_list
+                ]
+
+                # Scale the normalized points based on the width and height of the bar
+                scaled_points = [
+                    f"{x + px * width:.5f},{y + py * height:.5f}" for px, py in normalized_points
+                ]
+
+                # Join the scaled points back into a string
+                attrib['points'] = ' '.join(scaled_points)
+                
+            self.svg.custom_shape_node(
+                parent,
+                custom_shape['tag'],
+                attrib=attrib,
+                class_='rect reactive tooltip-trigger'
+            )
         # Check if a bar image should be used instead of a regular bar
-        if self.bar_images and len(self.bar_images) > i:
+        elif self.bar_images and len(self.bar_images) > i:
             image_url = self.bar_images[i]
             self.svg.node(
                 parent,
@@ -150,7 +186,7 @@ class Bar(Graph):
                 self.svg, self.svg.node(bars, class_='bar'), metadata
             )
             x_, y_, width, height = self._bar(
-                serie, bar, x, y, i, self.zero, secondary=rescale
+                serie, bar, x, y, i, self.zero, secondary=rescale, custom_shape=self.custom_shape
             )
 
             self._confidence_interval(
@@ -194,6 +230,7 @@ class Bar(Graph):
 
 # Recalculate total_spacing based on scaled_spacing to get the total adjusted spacing.
 # Set self._box.xmax to (self._len + total_spacing) / self._len to ensure the x-axis accommodates all bars with the specified spacing.
+
     """
     Compute y min and max, y scale, and set labels for the bar graph.
 
@@ -207,6 +244,7 @@ class Bar(Graph):
     Returns:
     None
     """
+
     def _compute(self):
         # Adjust ymin and ymax for the y-axis based on specified min and max values
         if self._min:
@@ -233,16 +271,22 @@ class Bar(Graph):
         # Compute positions for bars with the scaled spacing
         for i in range(self._len):
             if scaled_spacing and len(scaled_spacing) > i and i != 0:
-                cumulative_spacing += scaled_spacing[i-1] / sum(scaled_spacing) * (self._len - 1)
-            pos = (i + .5) / self._len + cumulative_spacing / self._len
+                cumulative_spacing += scaled_spacing[i - 1] / sum(scaled_spacing) * (self._len - 1)
+            
+            # Calculate the position
+            pos = (i + .001) / self._len + cumulative_spacing / self._len
             self._x_pos.append(pos)
+
+        # Adjust positions so that the last position ends at 1 and the view is not cropped
+        if self._x_pos and self._x_pos[-1] > 1:
+            scale_factor = 1 / self._x_pos[-1]
+            self._x_pos = [p * scale_factor for p in self._x_pos]
 
         # Set the positions of the bars
         self._points(self._x_pos)
 
-        # Set the xmax value for the x-axis based on the total spacing
-        total_spacing = sum(scaled_spacing) if scaled_spacing else 0
-        self._box.xmax = (self._len + total_spacing) / self._len
+        # Set the xmax value for the x-axis based on the final positions
+        self._box.xmax = max(self._x_pos) if self._x_pos else 1
 
     def _plot(self):
         """Draw bars for series and secondary series"""

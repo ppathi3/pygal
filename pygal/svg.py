@@ -203,10 +203,21 @@ class Svg(object):
                 attrib[key.rstrip('_')] = attrib[key]
                 del attrib[key]
             elif key == 'href':
-                attrib[etree.QName('http://www.w3.org/1999/xlink',
-                                   key)] = attrib[key]
+                attrib[etree.QName('http://www.w3.org/1999/xlink', key)] = attrib[key]
                 del attrib[key]
         return etree.SubElement(parent, tag, attrib)
+
+    # Method to render the image inside the svgs
+    def image(self, parent, href, x, y, width, height):
+        """Add an image to the SVG."""
+        self.node(
+            parent, 'image',
+            href=href,
+            x=x,
+            y=y,
+            width=width,
+            height=height
+        )
 
     def transposable_node(self, parent=None, tag='g', attrib=None, **extras):
         """Make a new svg node which can be transposed if horizontal"""
@@ -222,6 +233,33 @@ class Svg(object):
                     extras[key2] = attr1
                 elif attr2:
                     del extras[key2]
+        return self.node(parent, tag, attrib, **extras)
+
+    def custom_shape_node(self, parent=None, tag='g', attrib=None, **extras):
+        """Make a new SVG node for custom shapes, with handling for horizontal graphs"""
+        # Check if the graph is horizontal and transpose attributes if needed
+        if self.graph.horizontal:
+            for key1, key2 in (('x', 'y'), ('width', 'height'), ('cx', 'cy')):
+                attr1 = extras.get(key1, None)
+                attr2 = extras.get(key2, None)
+                if attr2:
+                    extras[key1] = attr2
+                elif attr1:
+                    del extras[key1]
+                if attr1:
+                    extras[key2] = attr1
+                elif attr2:
+                    del extras[key2]
+
+            # Handle polygon points transposition separately
+            if tag == 'polygon' and 'points' in extras:
+                points = extras['points']
+                new_points = []
+                for point in points.split():
+                    x, y = map(float, point.split(','))
+                    new_points.append(f"{y},{x}")
+                extras['points'] = ' '.join(new_points)
+
         return self.node(parent, tag, attrib, **extras)
 
     def serie(self, serie):

@@ -31,6 +31,8 @@ import warnings
 
 from importlib_metadata import entry_points
 
+# All the commented lines are used for different visualizations which are not a part of this repository at present.
+# Please uncomment them if you want to add customizations to those in the future.
 from pygal import maps
 from pygal.config import Config
 from pygal.graph.bar import Bar
@@ -44,18 +46,17 @@ from pygal.graph.histogram import Histogram
 # from pygal.graph.horizontalline import HorizontalLine
 # from pygal.graph.horizontalstackedbar import HorizontalStackedBar
 # from pygal.graph.horizontalstackedline import HorizontalStackedLine
-# from pygal.graph.line import Line
-# from pygal.graph.pie import Pie
+from pygal.graph.line import Line
+from pygal.graph.pie import Pie
 # from pygal.graph.pyramid import Pyramid, VerticalPyramid
 # from pygal.graph.radar import Radar
 from pygal.graph.solidgauge import SolidGauge
-# from pygal.graph.stackedbar import StackedBar
+from pygal.graph.stackedbar import StackedBar
 # from pygal.graph.stackedline import StackedLine
 # from pygal.graph.time import DateLine, DateTimeLine, TimeDeltaLine, TimeLine
 # from pygal.graph.treemap import Treemap
-# from pygal.graph.xy import XY
+from pygal.graph.xy import XY
 
-print("In init file")
 CHARTS_BY_NAME = dict([
     (k, v) for k, v in locals().items()
     if isinstance(v, type) and issubclass(v, Graph) and v != Graph

@@ -1,109 +1,92 @@
-# Pygal
-
-
-[![Build Status](https://travis-ci.org/Kozea/pygal.svg?branch=master)](https://travis-ci.org/Kozea/pygal)
-[![Coverage Status](https://coveralls.io/repos/Kozea/pygal/badge.svg?branch=master&service=github)](https://coveralls.io/github/Kozea/pygal?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/pygal/badge/?version=latest)](https://readthedocs.org/projects/pygal/?badge=latest)
-
-
-- [Pygal](#pygal)
-    - [Description](#description)
-    - [Installation](#installation)
-    - [Test](#test)
-    - [Contribute](#contribute)
-    - [License](#license)
-
-## Description
-
-**pygal** is a dynamic SVG charting library written in python.
-All the documentation is on [www.pygal.org](http://www.pygal.org)
-
-## Instructions for building and installing the Pygal in local by compiling new changes each time
-
-1. Clone the repository
-2. Go to the project directory
+# Pygal Customization Guide
+## Installation steps
+1. Clone the repository: 
+```bash
+git clone https://github.com/ppathi3/pygal.git
+```
+2. Go to the project directory: 
 ```bash
 cd path/to/pygal
 ```
-3. Ensure you have setuptools and wheel installed:
+3. Ensure you have setup tools and wheel installed:
 ```bash
 pip install setuptools wheel
 ```
-4. Create the distribution package
+4. Create the distribution package:
 ```bash
-python setup.py sdist bdist_wheel
+python setup.py bdist_wheel
 ```
-
-NOTE: If you run into any issues regarding missing packages, please install the missing libraries as specified.
-This command will generate the distribution files (.whl file) in the dist directory.
-
-## Installation
-
-You can install the library using the `.whl` file:
-
-1. Navigate to the `dist` directory.
+NOTE: If you run into any issues regarding missing packages, please install the missing libraries as specified. This command will generate the distribution files (.whl file) in the dist directory.
+Now you can install the library using the .whl file by navigating to the dist directory: cd dist
+5. Install the .whl file using pip:
 ```bash
-cd dist
-```
-
-2. Install the `.whl` file using `pip`:
-
-```sh
 pip install pygal-3.0.4-py3-none-any.whl
 ```
-
-## Test if the installation works fine
-
-You can find sample.ipynb file in the project, restart the kernel and run this file to check if the bar chart is rendered without any issues and your changes are reflected.
-
-## Installation in general
-
-As simple as:
-
+6. Install all the required libraries present inside the docs foldeby navigating to the docs using cs docs:
+```bash
+pip install -r requirements.txt
 ```
-    $ pip install pygal
-```
+7. Test if the installation works fine
+8. You can find sample.ipynb file in the project, restart the kernel and run this file to check if the bar chart is rendered without any issues and your changes are reflected.
 
 
+## File structure
+1. The pygal repo consists of a pygal/graph folder in which you can find all the files consisting of the code responsible for rendering multiple visualisations.
+2. All the major changes were made in the bar.py file and xy.py file for the bar chart and the scatter plot customization implementations.
+## Walking through the examples
+1. I’ve implemented two main features:
+    a. Custom spacing
+    b. Texture
+2. The custom spacing feature lets the user provide an array of values where the user can provide the spacing that he/she wants to provide between the graph bars.
+3. The texture feature lets the user provide an array of image URLs for each bar to which he/she wants to add a texture to.
+   ## How to use the feature?
+   Examples:
+   ![image](https://github.com/user-attachments/assets/2473bd7b-5db8-48f8-a999-1028a6545ff5)
 
-## Test
+    ### Specifying bar spacing values
+    ```bash
+    bar_spacing = [0.1, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15]  # Adjust spacing values for each bar as needed
 
-Pygal is tested with py.test:
+    bar_chart = pygal.Bar(bar_spacing=bar_spacing)
+    ```
+   ![image](https://github.com/user-attachments/assets/85d6fcb4-c0a1-4fd8-bb7a-07533643fef8)
 
+    ### Specifying bar spacing values
+    ```bash
+    bar_spacing = [0.1, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15, 0.2, 0.15, 0.1, 0.15]  # Adjust spacing values for each bar as needed
 
-```
-    $ pip install pytest
-    $ py.test
-```
+    bar_chart = pygal.Bar(bar_spacing=bar_spacing, bar_images=['https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg', 'https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg'])
+    ```
 
+   ![image](https://github.com/user-attachments/assets/2cf56e85-b4c9-45b6-a580-5a68fcf987a8)
 
-## Contribute
+    ```bash
+    bar_chart = pygal.Bar(bar_images=['https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg', 'https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png', 'https://img.freepik.com/free-vector/abstract-colorful-soft-watercolor-texture-background_1035-18958.jpg', 'https://t4.ftcdn.net/jpg/06/06/89/91/360_F_606899189_2snQer28Ka7oAUQp65vraexOsaBnNWXb.jpg', 'https://images.hdqwalls.com/wallpapers/colorful-abstract-texture-g6.jpg', 'https://cdn.pixabay.com/photo/2017/06/10/09/43/colorful-background-2389472_960_720.jpg', 'https://p4.wallpaperbetter.com/wallpaper/1021/131/727/colors-texture-pattern-artwork-wallpaper-preview.jpg'], custom_shape=None)
 
-You are welcomed to fork the project and make pull requests.
-Be sure to create a branch for each feature, write tests if needed and run the current tests !
+    ```
+   ![image](https://github.com/user-attachments/assets/f3ae4e99-97aa-4349-92c0-74d932f536cc)
 
+    ```bash
+    # Specifying file path for reading shape data from CSV
+    file_path = 'shape_data.csv'
+    coordinates = read_shape_data_from_csv(file_path)
+    print(coordinates)
 
-You can also support the project:
+    # Specifying custom shape object
+    custom_shape = {            
+    'tag': 'polygon',
+    'attrib': {
+        'points': coordinates,
+        'class': 'custom-shape'
+        }
+    }
+    bar_chart = pygal.Bar(custom_shape=custom_shape)
+    ```
+   ![image](https://github.com/user-attachments/assets/e04ad966-2eb6-4ad6-a585-18d2823b3ed8)
 
-[![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=paradoxxx_zero&url=https://github.com/Kozea/pygal&title=Pygal&tags=github&category=software)
-[![gittip](http://i.imgur.com/IKcQB2P.png)](https://www.gittip.com/paradoxxxzero/)
-
-
-
-## License
-
-Copyright © 2012-2016 Kozea
-LGPLv3:
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   
+## Recompiling the updated version and testing the new changes
+1. Every time we make a change to the repo, ensure to create a new distribution package using: python setup.py bdist_wheel
+2. Now you can install the library using the .whl file by navigating to the dist directory: cd dist
+3. Install the .whl file using pip: pip install pygal-3.0.4-py3-none-any.whl
+Restart the kernel and run your file to check if your changes are reflected.
