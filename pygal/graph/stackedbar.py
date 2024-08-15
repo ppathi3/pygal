@@ -137,7 +137,6 @@ class StackedBar(Bar):
         height = self.view.y(zero) - y
         r = serie.rounded_bars * 1 if serie.rounded_bars else 0
         if self.bar_images and len(self.bar_images) > i:
-            print("self bar images", self.bar_images[i], serie)
             image_url = self.bar_images[i]
             self.svg.node(
                 parent,

@@ -22,22 +22,16 @@ class Bar(Graph):
     def _bar(self, serie, parent, x, y, i, zero, secondary=False, custom_shape=None):
         """Internal bar drawing function"""
         # Calculate the width of each bar
-        width = (self.view.x(1) - self.view.x(0)) / self._len
-        print("Width", width)
+        width = (self.view.x(1) - self.view.x(0)) / (self._len*self._order/2)
 
         # Apply bar spacing dynamically
         x, y = self.view((x, y))
-        print("X and Y", x, y)
 
         # Adjust for the margin between series
         series_margin = width * self._series_margin
-        print("Series margin", series_margin)
         x += series_margin
-        print("x after series margin", x)
         width -= 2 * series_margin
-        print("width after series margin multiplication", width)
         width /= self._order
-        print("width after order division", width, self._order)
 
         # Determine the position of the bar based on its index in the series
         if self.horizontal:
@@ -45,12 +39,10 @@ class Bar(Graph):
         else:
             serie_index = serie.index
         x += serie_index * width
-        print("X after adding series index width", x, serie_index)
 
         # Adjust for the margin within a single series
         serie_margin = width * self._serie_margin
         x += serie_margin
-        print("X after adding serie margin", x, serie_margin)
         width -= 2 * serie_margin
 
         # Calculate the height of the bar
@@ -58,42 +50,47 @@ class Bar(Graph):
         # Determine if the bar should have rounded corners
         r = serie.rounded_bars * 1 if serie.rounded_bars else 0
 
+        # If custom shape is provided, render it
         if custom_shape:
             attrib = custom_shape.get('attrib', {})
             if custom_shape['tag'] == 'polygon':
-                if 'sides' not in custom_shape:
-                    custom_shape['sides'] = 3  # Default to triangle if sides not specified
+                points = attrib.get('points', '')
+            if points:
+                # Parse the points into a list of tuples (x, y)
+                points_list = [tuple(map(float, p.split(','))) for p in points.split()]
 
-                if custom_shape['sides'] == 3:
-                    # Triangle
-                    points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
-                elif custom_shape['sides'] == 5:
-                    # Pentagon
-                    points = f"{x},{y + height} " \
-                            f"{x + width},{y + height} " \
-                            f"{x + width},{y + 0.5 * height} " \
-                            f"{x + 0.5 * width},{y} " \
-                            f"{x},{y + 0.5 * height}"
-                elif custom_shape['sides'] == 6:
-                    # Hexagon
-                    points = f"{x},{y + height} " \
-                            f"{x + width},{y + height} " \
-                            f"{x + width},{y + height / 2} " \
-                            f"{x + 0.75 * width},{y} " \
-                            f"{x + 0.25 * width},{y} " \
-                            f"{x},{y + height / 2}"
-                else:
-                    # Default to triangle if unsupported shape
-                    points = f"{x},{y + height} {x + width},{y + height} {x + width / 2},{y}"
-                attrib['points'] = points
+                # Normalize points to fit within a unit square (0,0) to (1,1)
+                min_x = min(px for px, _ in points_list)
+                max_x = max(px for px, _ in points_list)
+                min_y = min(py for _, py in points_list)
+                max_y = max(py for _, py in points_list)
+                range_x = max_x - min_x
+                range_y = max_y - min_y
 
+                # Avoid division by zero
+                if range_x == 0:
+                    range_x = 1
+                if range_y == 0:
+                    range_y = 1
+
+                normalized_points = [
+                    ((px - min_x) / range_x, (py - min_y) / range_y) for px, py in points_list
+                ]
+
+                # Scale the normalized points based on the width and height of the bar
+                scaled_points = [
+                    f"{x + px * width:.5f},{y + py * height:.5f}" for px, py in normalized_points
+                ]
+
+                # Join the scaled points back into a string
+                attrib['points'] = ' '.join(scaled_points)
+                
             self.svg.custom_shape_node(
                 parent,
                 custom_shape['tag'],
                 attrib=attrib,
                 class_='rect reactive tooltip-trigger'
             )
-
         # Check if a bar image should be used instead of a regular bar
         elif self.bar_images and len(self.bar_images) > i:
             image_url = self.bar_images[i]
@@ -279,13 +276,11 @@ class Bar(Graph):
             # Calculate the position
             pos = (i + .001) / self._len + cumulative_spacing / self._len
             self._x_pos.append(pos)
-            print("Position", pos, self._x_pos)
 
         # Adjust positions so that the last position ends at 1 and the view is not cropped
         if self._x_pos and self._x_pos[-1] > 1:
             scale_factor = 1 / self._x_pos[-1]
             self._x_pos = [p * scale_factor for p in self._x_pos]
-            print("Scaled Positions", self._x_pos)
 
         # Set the positions of the bars
         self._points(self._x_pos)

@@ -57,7 +57,6 @@ from pygal.graph.stackedbar import StackedBar
 # from pygal.graph.treemap import Treemap
 from pygal.graph.xy import XY
 
-print("In init file")
 CHARTS_BY_NAME = dict([
     (k, v) for k, v in locals().items()
     if isinstance(v, type) and issubclass(v, Graph) and v != Graph
