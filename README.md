@@ -90,7 +90,8 @@ pip install -r requirements.txt
     # Specify a shape among rect/polygon/circle to render the scatter chart
     xy_chart = pygal.XY(stroke=False, shape='rect')
     ```
-   
+   ![Screenshot 2024-08-16 013018](https://github.com/user-attachments/assets/36f742d1-7903-4ab0-87f3-238d11e0f045)
+
    
 ## Recompiling the updated version and testing the new changes
 1. Every time we make a change to the repo, ensure to create a new distribution package using:
