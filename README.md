@@ -107,3 +107,6 @@ cd dist
 pip install pygal-3.0.4-py3-none-any.whl
 ```
 Restart the kernel and run your file to check if your changes are reflected.
+
+Video Reference:
+https://drive.google.com/file/d/1fWzRKGGjtuA9t7_sLbw9mAvxAMkc-lqX/view?usp=drive_link
