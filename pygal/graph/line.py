@@ -28,10 +28,11 @@ from pygal.util import alter, cached_property, decorate
 class Line(Graph):
     """Line graph class"""
 
-    def __init__(self, *args, shape='circle', shape_attributes=None, **kwargs):
+    def __init__(self, *args, shape='circle', image_urls=None, shape_attributes=None, **kwargs):
         """Set _self_close as False, it's True for Radar like Line"""
         self._self_close = False
         self.shape = shape
+        self.image_urls = image_urls
         self.shape_attributes = shape_attributes if shape_attributes else {}
         super(Line, self).__init__(*args, **kwargs)
 
@@ -122,41 +123,86 @@ class Line(Graph):
                 )
 
                 val = self._format(serie, i)
-                
-                # Conditions for each shape parameter
-                if self.shape == 'circle':
-                    alter(
-                        self.svg.transposable_node(
-                            dots,
-                            'circle',
-                            cx=x,
-                            cy=y,
-                            r=self.shape_attributes.get('r', serie.dots_size),
-                            class_='dot reactive tooltip-trigger'
-                        ), metadata
-                    )
-                elif self.shape == 'rect':
-                    alter(
-                        self.svg.transposable_node(
-                            dots,
-                            'rect',
-                            x=x - self.shape_attributes.get('width', 10) / 2,
-                            y=y - self.shape_attributes.get('height', 10) / 2,
-                            width=self.shape_attributes.get('width', 10),
-                            height=self.shape_attributes.get('height', 10),
-                            class_='dot reactive tooltip-trigger'
-                        ), metadata
-                    )
-                elif self.shape == 'polygon':
-                    points = self.shape_attributes.get('points', '0,0 10,0 5,10')
-                    alter(
-                        self.svg.transposable_node(
-                            dots,
-                            'polygon',
-                            points=f'{x},{y} {points}',
-                            class_='dot reactive tooltip-trigger'
-                        ), metadata
-                    )
+                # Image rendering based on the shape
+                if self.image_urls:
+                    image_url = self.image_urls.get(serie.title)
+                    r = self.shape_attributes.get('r', serie.dots_size)
+                    width = self.shape_attributes.get('width', 15)
+                    height = self.shape_attributes.get('height', 15)
+                    if image_url:
+                        if self.shape == 'circle':
+                            self.svg.image(
+                                self.nodes['plot'],
+                                href=image_url,
+                                x=x - r,
+                                y=y - r,
+                                width=r * 2,
+                                height=r * 2,
+                                class_='dot reactive tooltip-trigger'
+                            )
+                        elif self.shape == 'rect':
+                            self.svg.image(
+                                self.nodes['plot'],
+                                href=image_url,
+                                x=x - width / 2,
+                                y=y - height / 2,
+                                width=width,
+                                height=height,
+                                class_='dot reactive tooltip-trigger'
+                            )
+                        elif self.shape == 'polygon':
+                            # Calculate bounding box for the polygon
+                            size = self.shape_attributes.get('size', 20)
+                            self.svg.image(
+                                self.nodes['plot'],
+                                href=image_url,
+                                x=x - size,
+                                y=y - size,
+                                width=size * 2,
+                                height=size * 2,
+                                class_='dot reactive tooltip-trigger'
+                            )
+
+                # If only shape is specified
+                elif self.shape:                    
+                    # Conditions for each shape parameter
+                    if self.shape == 'circle':
+                        r = self.shape_attributes.get('r', serie.dots_size)
+                        alter(
+                            self.svg.transposable_node(
+                                dots,
+                                'circle',
+                                cx=x,
+                                cy=y,
+                                r=r,
+                                class_='dot reactive tooltip-trigger'
+                            ), metadata
+                        )
+                    elif self.shape == 'rect':
+                        width = self.shape_attributes.get('width', 15)
+                        height = self.shape_attributes.get('height', 15)
+                        alter(
+                            self.svg.transposable_node(
+                                dots,
+                                'rect',
+                                x=x - width / 2,
+                                y=y - height / 2,
+                                width=width,
+                                height=height,
+                                class_='dot reactive tooltip-trigger'
+                            ), metadata
+                        )
+                    elif self.shape == 'polygon':
+                        size = self.shape_attributes.get('size', 20)
+                        points = f'{x},{y - size} {x - size},{y + size} {x + size},{y + size}'
+                        alter(
+                            self.svg.transposable_node(
+                                dots,
+                                'polygon',
+                                points=points,
+                                class_='dot reactive tooltip-trigger'
+                            ), metadata
+                        )
 
                 self._tooltip_data(
                     dots, val, x, y, xlabel=self._get_x_label(i)

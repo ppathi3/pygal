@@ -22,8 +22,9 @@ Now you can install the library using the .whl file by navigating to the dist di
 ```bash
 pip install pygal-3.0.4-py3-none-any.whl
 ```
-6. Install all the required libraries present inside the docs foldeby navigating to the docs using cs docs:
+6. Install all the required libraries present inside the docs folder by navigating to the docs using:
 ```bash
+cd docs
 pip install -r requirements.txt
 ```
 7. Test if the installation works fine
@@ -39,6 +40,7 @@ pip install -r requirements.txt
     b. Texture
 2. The custom spacing feature lets the user provide an array of values where the user can provide the spacing that he/she wants to provide between the graph bars.
 3. The texture feature lets the user provide an array of image URLs for each bar to which he/she wants to add a texture to.
+4. There's another feature that allows the user to provide a shape data and it builds the bar chart accordingly.
    ## How to use the feature?
    Examples:
    ![image](https://github.com/user-attachments/assets/2473bd7b-5db8-48f8-a999-1028a6545ff5)
@@ -84,9 +86,23 @@ pip install -r requirements.txt
     ```
    ![image](https://github.com/user-attachments/assets/e04ad966-2eb6-4ad6-a585-18d2823b3ed8)
 
+    ```bash
+    # Specify a shape among rect/polygon/circle to render the scatter chart
+    xy_chart = pygal.XY(stroke=False, shape='rect')
+    ```
+   
    
 ## Recompiling the updated version and testing the new changes
-1. Every time we make a change to the repo, ensure to create a new distribution package using: python setup.py bdist_wheel
-2. Now you can install the library using the .whl file by navigating to the dist directory: cd dist
-3. Install the .whl file using pip: pip install pygal-3.0.4-py3-none-any.whl
+1. Every time we make a change to the repo, ensure to create a new distribution package using:
+```bash
+python setup.py bdist_wheel
+```
+2. Now you can install the library using the .whl file by navigating to the dist directory:
+```bash
+cd dist
+```
+3. Install the .whl file using pip:
+```bash
+pip install pygal-3.0.4-py3-none-any.whl
+```
 Restart the kernel and run your file to check if your changes are reflected.

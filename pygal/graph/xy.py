@@ -65,29 +65,6 @@ class XY(Line, Dual):
             (max(self.yvals) if self.yvals else None)
         )
 
-    def _render_images(self):
-        """Render images at each point."""
-        # Define the image URLs for each group
-        image_urls = {
-            'A': 'https://docs.tibco.com/pub/sfire-cloud/12.4.0/doc/html/en-US/TIB_sfire_client/client/images/stacked_100__bar_chart_intro.png',
-            'B': 'https://example.com/imageB.png',
-            'C': 'https://example.com/imageC.png'
-        }
-
-        for serie in self.all_series:
-            image_url = image_urls.get(serie.title)
-            if image_url:
-                for x, y in serie.points:
-                    if x is not None and y is not None:
-                        self.svg.image(
-                            self.nodes['plot'],
-                            href=image_url,
-                            x=self.view.x(x) - 10,  # Adjust image position
-                            y=self.view.y(y) - 10,  # Adjust image position
-                            width=20,
-                            height=20
-                        )
-
     def _compute(self):
         """Compute x/y min and max and x/y scale and set labels"""
         if self.xvals:
@@ -156,4 +133,3 @@ class XY(Line, Dual):
     def _plot(self):
         """Plot the graph"""
         super(XY, self)._plot()
-        self._render_images()
